@@ -1,66 +1,77 @@
-const express = require('express')
-const cors = require('cors')
-const nodemailer = require("nodemailer");
-const app = express()
-const mongooes = require('mongoose')
+const express = require("express")
+const cors = require("cors")
+const mongoose = require("mongoose")
 
-app.use(cors())
+const app = express()
+var corsOptions = { origin: ['https://bulkmail-mern-stack.vercel.app/'], }
+app.use(cors(corsOptions))
 app.use(express.json())
 
-mongooes.connect("mongodb+srv://toji:2448736@cluster0.pvy9ro2.mongodb.net/passkey?retryWrites=true&w=majority").then(function () {
+app.listen(5000, function () {
+  console.log("server connected...")
+})
+"use strict";
+const nodemailer = require("nodemailer");
+
+
+mongoose.connect("mongodb+srv://toji:2448736@cluster0.pvy9ro2.mongodb.net/passkey?retryWrites=true&w=majority").then(function () {
   console.log("Connected to DB")
-}).catch(function () {
-  console.log("connection failed")
+}).catch(function (error) {
+  console.log(error)
 })
 
-const credential = mongooes.model("credential", {}, "bulkmail")
+
+const credential = mongoose.model('credential', {}, "bulkmail")
+
+app.get("/", function (req, res) {
+  res.send("server is connected")
+})
 
 
-app.post("https://bulkmail-mern-stack.vercel.app/mail", function (req, res) {
+
+app.post("/mail", function (req, res) {
+  res.send("returned")
   var msg = req.body.msg
   var emailList = req.body.emailList
+
   credential.find().then(function (data) {
+    console.log(data[0].toJSON().pass)
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: data[0].toJSON().user,
         pass: data[0].toJSON().pass,
+
       },
+
     });
 
     new Promise(async function (resolve, reject) {
       try {
-        for (var i = 0; i < emailList.length; i++) {
+        for (var i = 0; i < emailList.length; i = i + 1) {
           await transporter.sendMail(
             {
               from: "rathenagamingofficial@gmail.com",
-              to: emailList[i],
-              subject: "A mail from Bulk Mail",
+              to: newtotalemail[i],
+              subject: "Testing mail from bulk mail app",
               text: msg
             }
           )
-          console.log("email send to:" + emailList[i])
+          console.log("Email sent to :" + emailList[i])
         }
-        resolve("success")
+        resolve("Success")
+
       }
       catch (error) {
+        console.log(error)
         reject("failed")
       }
     }).then(function () {
       res.send(true)
+    }).catch(function () {
+      res.send(false)
     })
-      .catch(function () {
-        res.send(false)
-      })
-
   }).catch(function () {
-    console.log("errorr")
+    console.log("Failed")
   })
-
-})
-
-
-
-app.listen(5000, function () {
-  console.log("server started...")
-})
+});
