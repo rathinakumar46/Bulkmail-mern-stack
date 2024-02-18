@@ -16,7 +16,7 @@ mongooes.connect("mongodb+srv://toji:2448736@cluster0.pvy9ro2.mongodb.net/passke
 const credential = mongooes.model("credential", {}, "bulkmail")
 
 
-app.post("/mail", function (req, res) {
+app.post("https://bulkmail-mern-stack.vercel.app/mail", function (req, res) {
   var msg = req.body.msg
   var emailList = req.body.emailList
   credential.find().then(function (data) {
