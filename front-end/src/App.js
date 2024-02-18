@@ -36,7 +36,7 @@ function App() {
   function send()
   {
     setstatus(true)
-    axios.post("http://localhost:5000/mail",{msg:msg, emailList:emailList}).then(function(data)
+    axios.post("http://bulkmail-mern-stack.vercel.app/mail",{msg:msg, emailList:emailList}).then(function(data)
     {
       if(data.data === true)
       {
